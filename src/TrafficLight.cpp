@@ -18,8 +18,11 @@ T MessageQueue<T>::receive()
     _condition.wait(recvLock, [this]() { return !_queue.empty(); });    // wait can assign the lock immediately on resource being available
     
     T newMessage = std::move(_queue.back());    // first in first out
-    
+
+ //old   
     //_queue.pop_back();  // doesn't return the element from the back
+ 
+ //new
     _queue.clear(); // advised by reviewer, performance improvement
 
     return newMessage;
@@ -53,7 +56,8 @@ void TrafficLight::waitForGreen()
     // Once it receives TrafficLightPhase::green, the method returns.
     while(_messages.receive() == TrafficLightPhase::red)
     {
-        //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // removed as per review suggestion
+//new removed as per review suggestion
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
 }
 
@@ -112,9 +116,10 @@ void TrafficLight::cycleThroughPhases()
             (std::chrono::steady_clock::now().time_since_epoch()).count()) -
             startTime) < targetCycleDuration)
         {
+//old
             // Removed as per review "Not recommended to use sleep for the whole time inside the function cycleThroughPhases"
             // std::this_thread::sleep_for(std::chrono::milliseconds(targetCycleDuration - (endTime - startTime)));
-
+//new
             // Other option as far as I can tell is a frequent 1millis cycle to then get a more responsive exit.
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
