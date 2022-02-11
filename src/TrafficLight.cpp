@@ -19,7 +19,8 @@ T MessageQueue<T>::receive()
     
     T newMessage = std::move(_queue.back());    // first in first out
     
-    _queue.pop_back();  // doesn't reutrn the element from the back
+    //_queue.pop_back();  // doesn't return the element from the back
+    _queue.clear(); // advised by reviewer, performance improvement
 
     return newMessage;
 }
