@@ -52,6 +52,8 @@
         "condition_variable": "cpp",
         "ratio": "cpp",
         "future": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "complex": "cpp",
+        "cstring": "cpp"
     }
 }

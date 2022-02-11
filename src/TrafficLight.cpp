@@ -53,7 +53,7 @@ void TrafficLight::waitForGreen()
     // Once it receives TrafficLightPhase::green, the method returns.
     while(_messages.receive() == TrafficLightPhase::red)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(1)); // removed as per review suggestion
     }
 }
 
@@ -89,10 +89,19 @@ void TrafficLight::cycleThroughPhases()
     auto endTime = startTime;
 
 
+    std::random_device rd;
+    std::uniform_int_distribution<int> dist(2000, 4000);
+
+///old
     // interval tracking
     // auto used here to keep var type matching timers.
     // rand : https://stackoverflow.com/questions/12657962/how-do-i-generate-a-random-number-between-two-variables-that-i-have-stored#12657984
-    auto targetCycleDuration = (endTime - startTime) + ((rand()%2001) + 4000);
+//    auto targetCycleDuration = (endTime - startTime) + ((rand()%2001) + 4000);
+
+//new   as per review  random_device for random time generator"
+    // https://www.geeksforgeeks.org/type-inference-in-c-auto-and-decltype/
+    // 
+    decltype(startTime) targetCycleDuration = dist(rd);
 
     // Light color alternating loop
     while(true)
@@ -103,7 +112,11 @@ void TrafficLight::cycleThroughPhases()
             (std::chrono::steady_clock::now().time_since_epoch()).count()) -
             startTime) < targetCycleDuration)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(targetCycleDuration - (endTime - startTime)));
+            // Removed as per review "Not recommended to use sleep for the whole time inside the function cycleThroughPhases"
+            // std::this_thread::sleep_for(std::chrono::milliseconds(targetCycleDuration - (endTime - startTime)));
+
+            // Other option as far as I can tell is a frequent 1millis cycle to then get a more responsive exit.
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
         // now update start comparison
@@ -118,7 +131,10 @@ void TrafficLight::cycleThroughPhases()
         _messages.send(std::move(_currentPhase));   // As per FP.4b
 
         // random millis for next delay
-        targetCycleDuration = (rand()%2001) + 4000;
+//old
+    //    targetCycleDuration = (rand()%2001) + 4000;
+//new
+        targetCycleDuration = dist(rd);
 
         // minimum 1ms delay between runs
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
