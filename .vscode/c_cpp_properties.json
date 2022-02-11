@@ -1,0 +1,21 @@
+{
+    "env": {
+        "myDefaultIncludePath": [
+            "${workspaceFolder}",
+            "${workspaceFolder}/src"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "Linux_x64",
+            "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "${myDefaultIncludePath}"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
